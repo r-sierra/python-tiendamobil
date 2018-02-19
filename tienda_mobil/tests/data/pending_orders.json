@@ -1,0 +1,49 @@
+{
+  "data": [
+    {
+      "id": "20488",
+      "type": "orders",
+      "attributes": {
+        "price-list": "R02-2018",
+        "customer": {
+          "code": "24899348",
+          "name": "Schmidt Analia Angelica"
+        },
+        "comment": "Una caja club",
+        "total-amount": "373.2",
+        "total-quantity": 12,
+        "businessman": "13008624"
+      }
+    },
+    {
+      "id": "20492",
+      "type": "orders",
+      "attributes": {
+        "price-list": "R02-2018",
+        "customer": {
+          "code": "31202377",
+          "name": "Gonzalez Claudia Noemi"
+        },
+        "comment": "",
+        "total-amount": "614.9",
+        "total-quantity": 20,
+        "businessman": "14076370"
+      }
+    },
+    {
+      "id": "20493",
+      "type": "orders",
+      "attributes": {
+        "price-list": "R02-2018",
+        "customer": {
+          "code": "05003446",
+          "name": "Rios Mirta Amalia"
+        },
+        "comment": "",
+        "total-amount": "579.0",
+        "total-quantity": 7,
+        "businessman": "14076370"
+      }
+    }
+  ]
+}

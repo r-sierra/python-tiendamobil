@@ -2,15 +2,21 @@ import re
 import unittest
 import responses
 import tienda_mobil
-from tienda_mobil import TiendaMobilError
 
-DEFAULT_URL = re.compile(r'https?://tiendamobil.com.ar/api/.*')
+DEFAULT_URL = re.compile(r'https?://tiendamobil\.com\.ar/.*')
 
+def readJSONFile(fname):
+    import os
+    import json
+    cwd = os.path.abspath(os.path.dirname(__file__))
+    with open(os.path.join(cwd, 'data', fname)) as f:
+        data = json.loads(f.read())
+    return data
 
 class ApiTest(unittest.TestCase):
 
     def setUp(self):
-        self.base_url = 'https://tiendamobil.com.ar/api'
+        self.base_url = 'https://tiendamobil.com.ar'
         self.api = tienda_mobil.Api(base_url=self.base_url, api_key='test')
 
     def testSetCredentials(self):
@@ -20,64 +26,11 @@ class ApiTest(unittest.TestCase):
         self.assertEqual(api._request_headers['authorization'], auth_header)
 
     @responses.activate
-    def testBadGateway(self):
-        # Server Error
-        responses.add(GET, DEFAULT_URL, status=502)
-        with self.assertRaisesRegexp(TiendaMobilError, 'Bad Gateway'):
-            resp = self.api.GetPendingOrders()
-
-        # try:
-        #     resp = self.api.GetPendingOrders()
-        # except tienda_mobil.TiendaMobilError as e:
-        #     print e.message
-        #     self.assertEqual(e.message, "Bad Gateway")
-
-    @responses.activate
-    def testUnauthorized(self):
-        # Application Error
-        responses.add(GET, DEFAULT_URL, status=401)
-        with self.assertRaisesRegexp(TiendaMobilError, 'Not authorized'):
-            resp = self.api.GetPendingOrders()
-
-        # try:
-        #     resp = self.api.GetPendingOrders()
-        # except tienda_mobil.TiendaMobilError as e:
-        #     print e.message
-        #     self.assertEqual(e.message, "Not authorized.")
-
-    @responses.activate
-    def testBadRequest(self):
-        # Application Error
-        responses.add(GET, DEFAULT_URL, status=400)
-        with self.assertRaisesRegexp(TiendaMobilError, 'Bad Request'):
-            resp = self.api.GetPendingOrders()
-
-        # try:
-        #     resp = self.api.GetPendingOrders()
-        # except tienda_mobil.TiendaMobilError as e:
-        #     print e.message
-        #     self.assertEqual(e.message, "Bad Request")
-
-    @responses.activate
-    def testUnprocessableEntity(self):
-        # Application Error
-        responses.add(GET, DEFAULT_URL, status=422)
-        with self.assertRaisesRegexp(TiendaMobilError, 'Unprocessable Entity'):
-            resp = self.api.GetPendingOrders()
-
-        # try:
-        #     resp = self.api.GetPendingOrders()
-        # except tienda_mobil.TiendaMobilError as e:
-        #     print e.message
-        #     self.assertEqual(e.message, "Unprocessable Entity")
-
-    @responses.activate
     def testGetPendingOrders(self):
-        with open('testdata/get_trends_current.json') as f:
-            resp_data = f.read()
-
-        url = '{0}/orders'.format(self.base_url)
-        responses.add(responses.GET, url, json=resp_data, status=200)
+        json_data = readJSONFile('pending_orders.json')
+        responses.add(responses.GET, DEFAULT_URL, json=json_data, status=200)
 
         resp = self.api.GetPendingOrders()
+        self.assertEqual(3, len(resp))
         self.assertTrue(type(resp[0]) is tienda_mobil.OrderPreview)
+        self.assertTrue(type(resp[0].customer) is tienda_mobil.Customer)

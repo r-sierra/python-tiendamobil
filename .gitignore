@@ -32,6 +32,9 @@ nosetests.xml
 htmlcov
 coverage.xml
 
+# Pytest cache
+.pytest_cache
+
 # PyCharm data
 .idea
 

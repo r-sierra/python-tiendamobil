@@ -45,6 +45,7 @@ setup(
     version=extract_metaitem('version'),
     license=extract_metaitem('license'),
     description=extract_metaitem('description'),
+    long_description=read('README.rst'),
     author=extract_metaitem('author'),
     author_email=extract_metaitem('email'),
     maintainer=extract_metaitem('author'),
@@ -57,7 +58,7 @@ setup(
     tests_require=['pytest'],
     keywords='tienda_mobil api',
     classifiers=[
-        'Development Status :: 5 - Production/Stable',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
@@ -66,5 +67,6 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
     ],
-    zip_safe=False
+    zip_safe=False,
+    include_package_data=True
 )

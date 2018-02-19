@@ -17,6 +17,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
 import requests
 from error import TiendaMobilError
 from models import (
@@ -236,8 +237,8 @@ class Api(object):
         network outages it will return an HTML fail page.
 
         Args:
-            json_data (str):
-                A python str created from the response content
+            response (requests.models <Response> class):
+                A response object created from the response content
 
         Raises:
             (tiendaMobil.TiendaMobilError): TiendaMobilError wrapping the error

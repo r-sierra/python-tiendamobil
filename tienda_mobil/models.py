@@ -121,7 +121,7 @@ class OrderPreview(TiendaMobilModel):
     def __repr__(self):
         return "OrderPreview(ID={i}, Customer='{c}', TotalAmount='{a}')".format(
             i=self.id,
-            c=self.customer['code'],
+            c=self.customer.code,
             a=self.totalAmount)
 
     @property
