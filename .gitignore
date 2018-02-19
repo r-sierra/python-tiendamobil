@@ -1,0 +1,52 @@
+*.py[co]
+
+# Packages
+*.egg
+*.egg-info
+dist
+build
+eggs
+parts
+bin
+include
+lib
+local
+var
+sdist
+develop-eggs
+.installed.cfg
+.eggs
+.cache
+.vscode
+
+# Installer logs
+pip-log.txt
+
+# Unit test / coverage reports
+.coverage
+.codecov-token
+.tox
+htmlcov
+.tox
+nosetests.xml
+htmlcov
+coverage.xml
+
+# PyCharm data
+.idea
+
+#Translations
+*.mo
+
+#Mr Developer
+.mr.developer.cfg
+
+#Environment
+env
+.python-version
+
+violations.flake8.txt
+
+# Built docs
+doc/_build/**
+
