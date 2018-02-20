@@ -24,8 +24,8 @@ __email__        = 'roberto@ideadigital.com.ar'
 __copyright__    = 'Copyright (c) 2018'
 __license__      = 'Apache License 2.0'
 __version__      = '0.1'
-__url__ = 'http://www.tiendamobil.com.ar'
-__description__ = 'A Python wrapper around the Tienda Mobil API'
+__url__          = 'https://github.com/r-sierra/python-tiendamobil'
+__description__  = 'A Python wrapper around the Tienda Mobil API'
 
 from .error import TiendaMobilError         # noqa
 from .models import (                       # noqa
