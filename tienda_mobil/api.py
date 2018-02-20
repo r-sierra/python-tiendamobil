@@ -74,6 +74,7 @@ class Api(object):
         """
         url = '%s/orders/' % self.base_url
         resp = self._RequestUrl(url, 'GET')
+        self._RaiseForHeaderStatus(resp)
         data = self._ParseAndCheck(resp)
 
         if return_json:
@@ -105,23 +106,21 @@ class Api(object):
             return Order.NewFromJsonDict(data)
 
     def UpdateOrderStatus(self, order_id):
-        """Returns True or False if the order status was updated
+        """Updates de requested order status
 
         Args:
             order_id(int, str):
                 The order id we want to update.
 
         Returns:
-          True or False
+          (True): if order was successfully updated
+
+        Raises:
+            (tiendaMobil.TiendaMobilError): TiendaMobilError wrapping the error
+            message
         """
-        url = '%s/orders/%s' % (self.base_url, order_id)
-        resp = self._RequestUrl(url, 'PATCH', {'order': {'processed': True}})
-        if resp.status_code == requests.codes.ok:
-            return True
-        elif resp.status_code == requests.codes.bad_request:
-            raise TiendaMobilError('400: Error al procesar peticion')
-        elif resp.status_code == requests.codes.unprocessable_entity:
-            return self._ParseAndCheck(resp)
+        payload = {'order': {'processed': True}}
+        return self.UpdateResource('orders', order_id, payload)
 
     def UpdateResource(self, resource_name, resource_id, data):
         """Returns True or False if the record was updated
@@ -138,7 +137,7 @@ class Api(object):
                 JSON:API spec 1.0
 
         Returns:
-          (True, False): If the update was successfull or not
+          (True): If the update was successfull
 
         Raises:
             (tiendaMobil.TiendaMobilError): TiendaMobilError wrapping the error
@@ -147,8 +146,12 @@ class Api(object):
 
         url = '{0}/{1}/{2}'.format(self.base_url, resource_name, resource_id)
         response = self._RequestUrl(url, 'PATCH', data)
-        self._RaiseForHeaderStatus(response)
-        self._ParseAndCheck(response)
+
+        if response.status_code == requests.codes.unprocessable:
+            # look for JSON error description
+            self._ParseAndCheck(response)
+        elif response.status_code != requests.codes.ok:
+            self._RaiseForHeaderStatus(response)
         return True
 
     def CreateResource(self, resource_name, data):
@@ -172,8 +175,12 @@ class Api(object):
 
         url = '{0}/{1}'.format(self.base_url, resource_name)
         response = self._RequestUrl(url, 'POST', data)
-        self._RaiseForHeaderStatus(response)
-        self._ParseAndCheck(response)
+
+        if response.status_code == requests.codes.unprocessable:
+            # look for JSON error description
+            self._ParseAndCheck(response)
+        elif response.status_code != requests.codes.ok:
+            self._RaiseForHeaderStatus(response)
         return True
 
     def _RaiseForHeaderStatus(self, response):
@@ -184,13 +191,13 @@ class Api(object):
             (tiendaMobil.TiendaMobilError): TiendaMobilError wrapping the error
             message
         """
-        # If status code is `unprocessable` do not raise exception
-        # as the response body needs to be processed for error details
-        if response.status_code != requests.codes.unprocessable_entity:
-            try:
-                response.raise_for_status()
-            except requests.exceptions.RequestException, e:
-                raise TiendaMobilError(e.message)
+        # # If status code is `unprocessable` do not raise exception
+        # # as the response body needs to be processed for error details
+        # if response.status_code != requests.codes.unprocessable_entity:
+        try:
+            response.raise_for_status()
+        except requests.exceptions.RequestException, e:
+            raise TiendaMobilError(e.message)
 
     def _RequestUrl(self, url, verb, data=None):
         """Request a url.
@@ -247,7 +254,7 @@ class Api(object):
         try:
             data = response.json()
         except ValueError, e:
-            raise TiendaMobilError(e.message)
+            raise TiendaMobilError('JSON parse error: {0}'.format(e.message))
         self._CheckForError(data)
         return data.get('data', {})
 
@@ -265,6 +272,9 @@ class Api(object):
         # Errors are relatively unlikely, so it is faster
         # to check first, rather than try and catch the exception
         if 'error' in data:
-            raise TiendaMobilError(data['error'])
+            raise TiendaMobilError('Error: {0}'.format(data['error']))
         if 'errors' in data:
-            raise TiendaMobilError(data['errors'])
+            errors = data['errors']
+            if type(errors) == list:
+                errors = ', '.join(errors)
+            raise TiendaMobilError('Errors: {0}'.format(data['errors']))

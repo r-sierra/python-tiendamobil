@@ -2,6 +2,7 @@ import re
 import unittest
 import responses
 import tienda_mobil
+from tienda_mobil import TiendaMobilError
 
 DEFAULT_URL = re.compile(r'https?://tiendamobil\.com\.ar/api/.*')
 
@@ -29,11 +30,17 @@ class ApiTest(unittest.TestCase):
     def testGetPendingOrders(self):
         json_data = readJSONFile('pending_orders.json')
         responses.add(responses.GET, DEFAULT_URL, json=json_data, status=200)
+        responses.add(responses.GET, DEFAULT_URL, json={}, status=200)
 
         resp = self.api.GetPendingOrders()
-
         self.assertEqual(3, len(resp))
-        self.assertTrue(type(resp[0]) is tienda_mobil.OrderPreview)
+        self.assertIs(type(resp), list)
+        self.assertIs(type(resp[0]), tienda_mobil.OrderPreview)
+
+        # empty response
+        resp = self.api.GetPendingOrders()
+        self.assertIs(type(resp), list)
+        self.assertEqual(0, len(resp))
 
     @responses.activate
     def testGetOrder(self):
@@ -59,9 +66,79 @@ class ApiTest(unittest.TestCase):
         self.assertIs(type(json_resp), dict)
         self.assertEqual(order_id, json_resp['id'])
 
-        with self.assertRaises(tienda_mobil.TiendaMobilError) as cm:
+        # invalid order number
+        with self.assertRaises(TiendaMobilError) as cm:
             resp = self.api.GetOrder(99999999)
         self.assertRegexpMatches(cm.exception.message, 'Bad Request')
 
+    @responses.activate
+    def testUpdateOrderStatus(self):
+        responses.add(responses.PATCH, DEFAULT_URL, status=200)
+        responses.add(responses.PATCH, DEFAULT_URL, status=400)
+        responses.add(responses.PATCH, DEFAULT_URL, status=422,
+            json={'errors': 'some error'})
 
+        self.assertTrue(self.api.UpdateOrderStatus(123456))
+
+        with self.assertRaisesRegexp(TiendaMobilError, 'Bad Request'):
+            self.api.UpdateOrderStatus(123456)
+
+        with self.assertRaisesRegexp(TiendaMobilError, 'some error'):
+            self.api.UpdateOrderStatus(123456)
+
+    @responses.activate
+    def testUpdateResource(self):
+        responses.add(responses.PATCH, DEFAULT_URL, status=200)
+        responses.add(responses.PATCH, DEFAULT_URL, status=400)
+        responses.add(responses.PATCH, DEFAULT_URL, status=404)
+        responses.add(responses.PATCH, DEFAULT_URL, status=422,
+            json={'error': 'Order cannot be empty'})
+        responses.add(responses.PATCH, DEFAULT_URL, status=422,
+            json={'errors': ['Order cannot be empty','Items cannot be empty']})
+
+        self.assertTrue(self.api.UpdateResource('orders', 1, {}))
+
+        # invalid resource id
+        with self.assertRaisesRegexp(TiendaMobilError, 'Bad Request'):
+            self.api.UpdateResource('orders', 1, {})
+
+        # invalid resource name
+        with self.assertRaisesRegexp(TiendaMobilError, 'Not Found for url'):
+            self.api.UpdateResource('invalid-resource', 1, {})
+
+        # validation error
+        with self.assertRaisesRegexp(TiendaMobilError, 'Error: '):
+            self.api.UpdateResource('orders', 1, {})
+
+        # validation errors
+        with self.assertRaisesRegexp(TiendaMobilError, 'Errors: '):
+            self.api.UpdateResource('orders', 1, {})
+
+    @responses.activate
+    def testCreateResource(self):
+        responses.add(responses.POST, DEFAULT_URL, status=200)
+        responses.add(responses.POST, DEFAULT_URL, status=400)
+        responses.add(responses.POST, DEFAULT_URL, status=404)
+        responses.add(responses.POST, DEFAULT_URL, status=422,
+            json={'error': 'Order cannot be empty'})
+        responses.add(responses.POST, DEFAULT_URL, status=422,
+            json={'errors': ['Order cannot be empty','Items cannot be empty']})
+
+        self.assertTrue(self.api.CreateResource('orders', {}))
+
+        # duplicated resource
+        with self.assertRaisesRegexp(TiendaMobilError, 'Bad Request'):
+            self.api.CreateResource('orders', {})
+
+        # invalid resource name
+        with self.assertRaisesRegexp(TiendaMobilError, 'Not Found for url'):
+            self.api.CreateResource('invalid-resource', {})
+
+        # validation error
+        with self.assertRaisesRegexp(TiendaMobilError, 'Error: '):
+            self.api.CreateResource('orders', {})
+
+        # validation errors
+        with self.assertRaisesRegexp(TiendaMobilError, 'Errors: '):
+            self.api.CreateResource('orders', {})
 
