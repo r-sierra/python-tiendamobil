@@ -17,7 +17,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
 import requests
 from error import TiendaMobilError
 from models import (
@@ -38,7 +37,7 @@ class Api(object):
             The base URL to use to contact the Tienda Mobil API.
         """
 
-        self.base_url = str(base_url) + '/api'
+        self.base_url = str(base_url)
 
         self._InitializeRequestHeaders()
         self._InitializeUserAgent()
