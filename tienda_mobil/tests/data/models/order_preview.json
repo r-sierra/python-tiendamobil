@@ -1,0 +1,15 @@
+{
+  "id": "20488",
+  "type": "orders",
+  "attributes": {
+    "price-list": "R02-2018",
+    "customer": {
+      "code": "24548648",
+      "name": "Schumacher Angelica"
+    },
+    "comment": "Una caja club",
+    "total-amount": "373.2",
+    "total-quantity": "12",
+    "businessman": "13567624"
+  }
+}

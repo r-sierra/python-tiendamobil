@@ -53,8 +53,8 @@ setup(
     url=extract_metaitem('url'),
     packages=['tienda_mobil'],
     platforms=['Any'],
-    install_requires=['requests'],
-    setup_requires=['pytest-runner'],
+    install_requires=['requests', 'responses'],
+    setup_requires=['pytest-runner >=2.0,<3dev'],
     tests_require=['pytest'],
     keywords='tienda_mobil api',
     classifiers=[

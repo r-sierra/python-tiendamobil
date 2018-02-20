@@ -78,3 +78,19 @@ class ApiTest(unittest.TestCase):
             json={'error': 'Customer cannot be empty'})
         with self.assertRaisesRegexp(TiendaMobilError, 'cannot be empty'):
             self.api.CreateResource('orders', {})
+
+    @responses.activate
+    def testJSONParsingError(self):
+        responses.add(responses.GET, DEFAULT_URL, status=200, body='')
+        with self.assertRaisesRegexp(TiendaMobilError, 'JSON parse error'):
+            self.api.GetPendingOrders()
+
+
+    @responses.activate
+    def testConnectionError(self):
+        """ Test handling of ConnectionError Exception """
+
+        # If you attempt to fetch a url which doesn't hit a match,
+        # responses will raise a ConnectionError:
+        with self.assertRaisesRegexp(TiendaMobilError, 'Connection Error'):
+            self.api.GetPendingOrders()

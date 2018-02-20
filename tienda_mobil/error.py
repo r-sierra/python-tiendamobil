@@ -9,5 +9,3 @@ class TiendaMobilError(Exception):
         '''Returns the first argument used to construct this error.'''
         return self.args[0]
 
-
-
