@@ -1,13 +1,6 @@
 #encoding: utf-8
 
 import json
-#from __future__ import unicode_literals
-#from calendar import timegm
-
-#try:
-#    from rfc822 import parsedate
-#except ImportError:
-#    from email.utils import parsedate
 
 class TiendaMobilModel(object):
 
