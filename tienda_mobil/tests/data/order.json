@@ -1,0 +1,38 @@
+{
+  "data": {
+    "id": "6746749258",
+    "type": "orders",
+    "attributes": {
+      "price-list": "R02-2018",
+      "customer": {
+        "code": "24624348",
+        "associate_code": "16985028",
+        "businessman_code": "18642624",
+        "email": "",
+        "gender": "female",
+        "telephone": "",
+        "cellphone": "389568817",
+        "address": "Remedios de escalada 717",
+        "locality": "Crespo",
+        "city": "Crespo",
+        "zip_code": "3116",
+        "charge_date": "2017-08-25",
+        "birthdate": "1986-02-15",
+        "province": "E",
+        "commercial_origin": "PROMO-PARA-ELLOS",
+        "name": "Schmidt Angelica"
+      },
+      "comment": "Una caja club",
+      "order-items": [
+        {
+          "quantity": 1,
+          "code": "47633002"
+        },
+        {
+          "quantity": 1,
+          "code": "47633003"
+        }
+      ]
+    }
+  }
+}

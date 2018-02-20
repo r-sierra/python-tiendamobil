@@ -96,6 +96,7 @@ class Api(object):
 
         url = '%s/orders/%s' % (self.base_url, order_id)
         resp = self._RequestUrl(url, 'GET')
+        self._RaiseForHeaderStatus(resp)
         data = self._ParseAndCheck(resp)
 
         if return_json:
