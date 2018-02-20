@@ -232,7 +232,7 @@ class Api(object):
             else:
                 raise TiendaMobilError('Unknown REST Verb: {0}'.format(verb))
         except requests.exceptions.ConnectionError as e:
-            raise TiendaMobilError(u"Error de conexión: {0}".format(e.message))
+            raise TiendaMobilError('Connection Error: {0}'.format(e.message))
 
         return resp
 
