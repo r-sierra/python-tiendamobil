@@ -18,8 +18,8 @@
 # limitations under the License.
 
 import requests
-from error import TiendaMobilError
-from models import (
+from .error import TiendaMobilError
+from .models import (
     Order,
     OrderPreview
 )
@@ -196,8 +196,8 @@ class Api(object):
         # if response.status_code != requests.codes.unprocessable_entity:
         try:
             response.raise_for_status()
-        except requests.exceptions.RequestException, e:
-            raise TiendaMobilError(e.message)
+        except requests.exceptions.RequestException as e:
+            raise TiendaMobilError(str(e))
 
     def _RequestUrl(self, url, verb, data=None):
         """Request a url.
@@ -232,7 +232,7 @@ class Api(object):
             else:
                 raise TiendaMobilError('Unknown REST Verb: {0}'.format(verb))
         except requests.exceptions.ConnectionError as e:
-            raise TiendaMobilError('Connection Error: {0}'.format(e.message))
+            raise TiendaMobilError('Connection Error: {0}'.format(str(e)))
 
         return resp
 
@@ -253,8 +253,8 @@ class Api(object):
         """
         try:
             data = response.json()
-        except ValueError, e:
-            raise TiendaMobilError('JSON parse error: {0}'.format(e.message))
+        except ValueError as e:
+            raise TiendaMobilError('JSON parse error: {0}'.format(str(e)))
         self._CheckForError(data)
         return data.get('data', {})
 
