@@ -18,8 +18,9 @@
 # limitations under the License.
 
 import requests
-from .error import TiendaMobilError
-from .models import (
+from tienda_mobil.error import TiendaMobilError
+from tienda_mobil import (
+    __version__,
     Order,
     OrderPreview
 )
@@ -53,7 +54,8 @@ class Api(object):
         }
 
     def _InitializeUserAgent(self):
-        self._request_headers['user-agent'] = 'OpenOrange API Sync 0.1'
+        user_agent = 'python-tiendamobil/{0}'.format(__version__)
+        self.SetUserAgent(user_agent)
 
     def _InitializeDefaultParameters(self):
         self._default_params = {}
@@ -278,3 +280,12 @@ class Api(object):
             if type(errors) == list:
                 errors = ', '.join(errors)
             raise TiendaMobilError('Errors: {0}'.format(data['errors']))
+
+    def SetUserAgent(self, user_agent):
+        """Override the default user agent.
+
+        Args:
+          user_agent:
+            A string that should be send to the server as the user-agent.
+        """
+        self._request_headers['User-Agent'] = user_agent

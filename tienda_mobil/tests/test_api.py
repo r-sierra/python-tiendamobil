@@ -26,6 +26,13 @@ class ApiTest(unittest.TestCase):
         api = tienda_mobil.Api(base_url=self.base_url, api_key=test_key)
         self.assertEqual(api._request_headers['authorization'], auth_header)
 
+    def testSetUserAgent(self):
+        new = 'foo/bar'
+        old = self.api._request_headers['User-Agent']
+        self.assertNotEqual(new, old)
+        self.api.SetUserAgent(new)
+        self.assertEqual(new, self.api._request_headers['User-Agent'])
+
     @responses.activate
     def testGetPendingOrders(self):
         json_data = readJSONFile('pending_orders.json')
