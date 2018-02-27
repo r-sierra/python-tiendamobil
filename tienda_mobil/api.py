@@ -233,8 +233,8 @@ class Api(object):
                 resp = requests.post(url, json=data, headers=self._request_headers)
             else:
                 raise TiendaMobilError('Unknown REST Verb: {0}'.format(verb))
-        except requests.exceptions.ConnectionError as e:
-            raise TiendaMobilError('Connection Error: {0}'.format(str(e)))
+        except requests.exceptions.RequestException as e:
+            raise TiendaMobilError(str(e))
 
         return resp
 
@@ -279,7 +279,7 @@ class Api(object):
             errors = data['errors']
             if type(errors) == list:
                 errors = ', '.join(errors)
-            raise TiendaMobilError('Errors: {0}'.format(data['errors']))
+            raise TiendaMobilError('Errors: {0}'.format(errors))
 
     def SetUserAgent(self, user_agent):
         """Override the default user agent.

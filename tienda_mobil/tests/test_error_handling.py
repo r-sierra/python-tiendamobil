@@ -92,5 +92,5 @@ class ApiTest(unittest.TestCase):
 
         # If you attempt to fetch a url which doesn't hit a match,
         # responses will raise a ConnectionError:
-        with self.assertRaisesRegexp(TiendaMobilError, 'Connection Error'):
+        with self.assertRaisesRegexp(TiendaMobilError, 'Connection refused'):
             self.api.GetPendingOrders()
