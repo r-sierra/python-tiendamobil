@@ -1,3 +1,7 @@
+# encoding: utf8
+
+from __future__ import unicode_literals
+
 import re
 import unittest
 import responses
@@ -94,3 +98,13 @@ class ApiTest(unittest.TestCase):
         # responses will raise a ConnectionError:
         with self.assertRaisesRegexp(TiendaMobilError, 'Connection refused'):
             self.api.GetPendingOrders()
+
+    @responses.activate
+    def testUnicodeErrorResponse(self):
+        responses.add(responses.PATCH, DEFAULT_URL, status=422,
+            json={'error': 'some unicode characters "ó ú ü" in response'})
+
+        with self.assertRaises(TiendaMobilError) as cm:
+            self.api.UpdateResource('orders', 99999, {})
+        self.assertRegexpMatches(cm.exception.message, 'ó ú ü')
+
